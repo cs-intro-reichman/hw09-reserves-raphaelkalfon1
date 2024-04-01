@@ -145,16 +145,17 @@ public class LanguageModel {
         lm.train(fileName);
 
         // Generate text using the trained model
-        String generatedText = lm.generate(initialText, textLength);
-
-        // Output the generated text
-        System.out.println(generatedText);
-    } catch (NumberFormatException e) {
-        System.out.println("Error: windowLength and textLength must be integers.");
-    } catch (Exception e) {
-        System.out.println("An error occurred: " + e.getMessage());
-        e.printStackTrace();
+        public String generate(String initialText, int textLength) {
+    StringBuilder generatedText = new StringBuilder(initialText);
+    while (generatedText.length() < textLength) {
+        String window = generatedText.substring(generatedText.length() - windowLength);
+        if (!CharDataMap.containsKey(window)) break; // Stop if the window is not in the map
+        List probs = CharDataMap.get(window);
+        char nextChar = getRandomChar(probs);
+        generatedText.append(nextChar);
     }
+    return generatedText.toString();
 }
+
 
 }
