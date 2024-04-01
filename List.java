@@ -10,7 +10,7 @@ public class List {
 
     // The number of elements in this list
     private int size;
-
+    
     /** Constructs an empty list. */
     public List() {
         first = null;
