@@ -47,16 +47,21 @@ public class List {
 
     
     /** GIVE Textual representation of this list. */
-    public String toString() {
+public String toString() {
     StringBuilder sb = new StringBuilder();
     Node current = first;
+    sb.append("[");
     while (current != null) {
-        sb.append(current.cp.toString());
-        if (current.next != null) sb.append(" -> ");
+        sb.append(current.charData.toString());
+        if (current.next != null) {
+            sb.append(", ");
+        }
         current = current.next;
     }
+    sb.append("]");
     return sb.toString();
 }
+
 
 
     /** Returns the index of the first CharData object in this list
