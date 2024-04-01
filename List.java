@@ -28,12 +28,22 @@ public class List {
     }
 
     /** GIVE Adds a CharData object with the given character to the beginning of this list. */
-   public void addFirst(char chr) {
-    Node newNode = new Node(new CharData(chr));
-    newNode.next = first;
-    first = newNode;
+    public void addFirst(char chr) {
+    // If the list is empty, create the first node
+    if (first == null) {
+        first = new Node(new CharData(chr));
+    } else {
+        // Create a new node with the given character data
+        Node newNode = new Node(new CharData(chr));
+        // Set the next reference of the new node to the current first node
+        newNode.next = first;
+        // Update the first node to point to the new node
+        first = newNode;
+    }
+    // Increment the size of the list
     size++;
 }
+
 
     
     /** GIVE Textual representation of this list. */
