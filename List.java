@@ -29,24 +29,27 @@ public class List {
 
     /** GIVE Adds a CharData object with the given character to the beginning of this list. */
     public void addFirst(char chr) {
-    Node newNode = new Node(new CharData(chr));
+    CharData newCharData = new CharData(chr);
+    Node newNode = new Node(newCharData);
     newNode.next = first;
     first = newNode;
     size++;
 }
 
+
     
     /** GIVE Textual representation of this list. */
-    public String toString() {
+public String toString() {
     StringBuilder sb = new StringBuilder();
     Node current = first;
     while (current != null) {
         sb.append(current.cp.toString());
-        if (current.next != null) sb.append(" -> ");
+        if (current.next != null) sb.append(" "); // Adjusted to put space or any required delimiter
         current = current.next;
     }
     return sb.toString();
 }
+
 
 
     /** Returns the index of the first CharData object in this list
