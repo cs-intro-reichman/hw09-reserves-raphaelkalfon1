@@ -33,19 +33,47 @@ public class LanguageModel {
 
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
-		// Your code goes here
-	}
+    // Initialize a reader to read the file (not shown here)
+    // For each window of text in the file:
+    //     if (!CharDataMap.containsKey(window)) {
+    //         CharDataMap.put(window, new List());
+    //     }
+    //     List probs = CharDataMap.get(window);
+    //     // Read next char following the window
+    //     probs.update(nextChar);
+    // Iterate over CharDataMap to calculate probabilities for each List
+    // (Using the calculateProbabilities method previously defined)
+}
+
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
-	public void calculateProbabilities(List probs) {				
-		// Your code goes here
-	}
+	public void calculateProbabilities(List probs) {
+    int totalChars = 0;
+    for (int i = 0; i < probs.getSize(); i++) {
+        totalChars += probs.get(i).count;
+    }
+    double cumulativeProbability = 0;
+    for (int i = 0; i < probs.getSize(); i++) {
+        CharData charData = probs.get(i);
+        charData.p = (double) charData.count / totalChars;
+        cumulativeProbability += charData.p;
+        charData.cp = cumulativeProbability;
+    }
+}
+
 
     // Returns a random character from the given probabilities list.
 	public char getRandomChar(List probs) {
-		// Your code goes here
-	}
+    double r = randomGenerator.nextDouble();
+    for (int i = 0; i < probs.getSize(); i++) {
+        if (r <= probs.get(i).cp) {
+            return probs.get(i).chr;
+        }
+    }
+    return probs.get(probs.getSize() - 1).chr; // Fallback to the last character if none matched (shouldn't happen if cp is correct).
+}
+
 
     /**
 	 * Generates a random text, based on the probabilities that were learned during training. 
@@ -55,8 +83,17 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-		// Your code goes here
-	}
+    StringBuilder generatedText = new StringBuilder(initialText);
+    while (generatedText.length() < textLength) {
+        String window = generatedText.substring(generatedText.length() - windowLength);
+        if (!CharDataMap.containsKey(window)) break; // Stop if the window is not in the map
+        List probs = CharDataMap.get(window);
+        char nextChar = getRandomChar(probs);
+        generatedText.append(nextChar);
+    }
+    return generatedText.toString();
+}
+
 
     /** Returns a string representing the map of this language model. */
 	public String toString() {
@@ -69,6 +106,42 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-		// Your code goes here
+    if (args.length < 5) {
+        System.out.println("Usage: java LanguageModel <windowLength> <initialText> <textLength> <fixed/random> <fileName>");
+        return;
     }
+
+    try {
+        int windowLength = Integer.parseInt(args[0]);
+        String initialText = args[1];
+        int textLength = Integer.parseInt(args[2]);
+        boolean useFixedSeed = args[3].equalsIgnoreCase("fixed");
+        String fileName = args[4];
+
+        LanguageModel lm;
+        if (useFixedSeed) {
+            // Use a fixed seed for reproducibility (for testing/debugging)
+            int seed = 20; // This could be any fixed number
+            lm = new LanguageModel(windowLength, seed);
+        } else {
+            // Use a random seed for different results on each run (for production)
+            lm = new LanguageModel(windowLength);
+        }
+
+        // Train the model with the specified file
+        lm.train(fileName);
+
+        // Generate text using the trained model
+        String generatedText = lm.generate(initialText, textLength);
+
+        // Output the generated text
+        System.out.println(generatedText);
+    } catch (NumberFormatException e) {
+        System.out.println("Error: windowLength and textLength must be integers.");
+    } catch (Exception e) {
+        System.out.println("An error occurred: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
 }
