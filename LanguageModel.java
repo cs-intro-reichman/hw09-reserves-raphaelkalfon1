@@ -33,26 +33,36 @@ public class LanguageModel {
 
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
-    // Initialize a reader to read the file (not shown here)
-    // For each window of text in the file:
-    //     if (!CharDataMap.containsKey(window)) {
-    //         CharDataMap.put(window, new List());
-    //     }
-    //     List probs = CharDataMap.get(window);
-    //     // Read next char following the window
-    //     probs.update(nextChar);
-    // Iterate over CharDataMap to calculate probabilities for each List
-    // (Using the calculateProbabilities method previously defined)
+    // Pseudocode for reading the file and populating the model
+    // Assuming an efficient way to read the file character by character
+    // and a method to update or add CharData to your CharDataMap
+    for (each n-character window in the file) {
+        char nextChar = read next character after the window;
+        List charList = CharDataMap.getOrDefault(window, new List());
+        charList.update(nextChar); // Update or add the nextChar in charList
+        calculateProbabilities(charList); // Recalculate probabilities
+        CharDataMap.put(window, charList); // Put updated list back into map
+    }
 }
+
 
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
-	public void calculateProbabilities(List probs) {
+	public void calculateProbabilities(List charList) {
     double totalChars = 0;
-    for (int i = 0; i < probs.getSize(); i++) {
-        totalChars += probs.get(i).count;
+    for (int i = 0; i < charList.getSize(); i++) {
+        totalChars += charList.get(i).count;
     }
+    double cumulativeProbability = 0;
+    for (int i = 0; i < charList.getSize(); i++) {
+        CharData charData = charList.get(i);
+        charData.p = charData.count / totalChars;
+        cumulativeProbability += charData.p;
+        charData.cp = cumulativeProbability;
+    }
+}
+
 
     double cumulativeProbability = 0;
     for (int i = 0; i < probs.getSize(); i++) {
@@ -85,16 +95,17 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-    StringBuilder generatedText = new StringBuilder(initialText);
-    while (generatedText.length() < textLength) {
-        String window = generatedText.substring(generatedText.length() - windowLength);
-        if (!CharDataMap.containsKey(window)) break; // Stop if the window is not in the map
-        List probs = CharDataMap.get(window);
-        char nextChar = getRandomChar(probs);
-        generatedText.append(nextChar);
+    StringBuilder output = new StringBuilder(initialText);
+    while (output.length() < textLength) {
+        String currentWindow = output.substring(Math.max(0, output.length() - windowLength));
+        List charList = CharDataMap.get(currentWindow);
+        if (charList == null) break; // Stop if no data for the current window
+        char nextChar = getRandomChar(charList); // Implement based on cumulative probabilities
+        output.append(nextChar);
     }
-    return generatedText.toString();
+    return output.toString();
 }
+
 
 
     /** Returns a string representing the map of this language model. */
