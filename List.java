@@ -29,12 +29,15 @@ public class List {
 
     /** GIVE Adds a CharData object with the given character to the beginning of this list. */
     public void addFirst(char chr) {
-    CharData newCharData = new CharData(chr);
-    Node newNode = new Node(newCharData);
-    newNode.next = first;
+    CharData newChar = new CharData(chr);
+    Node newNode = new Node(newChar);
+    if (first != null) {
+        newNode.next = first;
+    }
     first = newNode;
     size++;
 }
+
 
 
     
@@ -44,7 +47,9 @@ public String toString() {
     Node current = first;
     while (current != null) {
         sb.append(current.cp.toString());
-        if (current.next != null) sb.append(" "); // Adjusted to put space or any required delimiter
+        if (current.next != null) {
+            sb.append(", "); // Separate entries with a comma for readability
+        }
         current = current.next;
     }
     return sb.toString();
