@@ -49,18 +49,20 @@ public class LanguageModel {
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
 	public void calculateProbabilities(List probs) {
-    int totalChars = 0;
+    double totalChars = 0;
     for (int i = 0; i < probs.getSize(); i++) {
         totalChars += probs.get(i).count;
     }
+
     double cumulativeProbability = 0;
     for (int i = 0; i < probs.getSize(); i++) {
         CharData charData = probs.get(i);
-        charData.p = (double) charData.count / totalChars;
+        charData.p = charData.count / totalChars;
         cumulativeProbability += charData.p;
         charData.cp = cumulativeProbability;
     }
 }
+
 
 
     // Returns a random character from the given probabilities list.
